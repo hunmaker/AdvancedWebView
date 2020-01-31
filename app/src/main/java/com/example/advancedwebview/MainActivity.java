@@ -4,61 +4,84 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.View;
+import android.view.Window;
+import android.webkit.JavascriptInterface;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.Timer;
 import java.util.TimerTask;
 
 import im.delight.android.webview.AdvancedWebView;
 
-public class MainActivity extends AppCompatActivity implements AdvancedWebView.Listener {
+public class MainActivity extends AppCompatActivity implements AdvancedWebView.Listener{
 
+    private WebView webView;
     private AdvancedWebView mWebView;
     private WebSettings mWebSettings;
-    private Timer mTimer;
+    Handler handler = new Handler();
+    EditText editText;
+    Button button;
+    TextView textView;
+    Context context;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_main2);
+        mWebView = findViewById(R.id.webView3);
+        editText = findViewById(R.id.edit_num);
+        button = findViewById(R.id.send_button);
+        textView = findViewById(R.id.web_text);
+        context = this;
 
-        mWebView = (AdvancedWebView) findViewById(R.id.webView);
-        mWebView.setListener(this, this);
-        mWebView.loadUrl("http://www.naver.com");
+        mWebView.getSettings().setJavaScriptEnabled(true);
+        mWebView.addJavascriptInterface(new WebBridge(),"java");
+        mWebView.loadUrl("file:///android_asset/www/exam.html");
+
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mWebView.loadUrl("javascript:exam_script.plus_num("+editText.getText()+")");
+            }
+        });
+
+//        mWebView = (AdvancedWebView) findViewById(R.id.webView);
+//        //mWebView.setListener(this, this);
+//        mWebView.getSettings().setJavaScriptEnabled(true);
+//        mWebView.loadUrl("file:///android_asset/www/test.html");
 //        mWebView.setWebChromeClient(new WebChromeClient()); //웹뷰에 크롬 사용 허용 //이 부분이 없으면 크롬에서 alert가 뜨지 않음
-//        reloadWebView();
-//        Timer timer = new Timer();
-//        TimerTask tt = new TimerTask() {
-//            @Override
-//            public void run() {
-//                Log.d("timer","timer");
-//                if(mWebView != null)
-//                    mWebView.loadUrl("http://www.google.com");
-//            }
-//        };
-//        timer.schedule(tt, 10000, 5000);
 
     }
 
-//    public void reloadWebView() {
-//        final Handler handler = new Handler();
-//        handler.postDelayed(new Runnable() {
-//            @Override
-//            public void run() {
-//                Log.d("reload", "a");
-//                mWebView.loadUrl("http://www.naver.com");
-//                reloadWebView();
-//            }
-//        }, 10000);}
+    class WebBridge{
+        @JavascriptInterface
+        public void getNum(final int num){
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(context,"계산 결과는 "+num+"입니다.",Toast.LENGTH_LONG).show();
+                    textView.setText("Java :::: "+num);
+                }
+            });
+        }
+    }
+
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) { //뒤로가기 버튼 이벤트
@@ -86,14 +109,13 @@ public class MainActivity extends AppCompatActivity implements AdvancedWebView.L
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mWebView.onDestroy();
-        //mTimer.cancel();
+        //mWebView.onDestroy();
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        mWebView.onActivityResult(requestCode,resultCode, data);
+        //mWebView.onActivityResult(requestCode,resultCode, data);
     }
 
     @Override
