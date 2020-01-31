@@ -11,6 +11,7 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.webkit.WebChromeClient;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
@@ -22,6 +23,7 @@ import im.delight.android.webview.AdvancedWebView;
 public class MainActivity extends AppCompatActivity implements AdvancedWebView.Listener {
 
     private AdvancedWebView mWebView;
+    private WebSettings mWebSettings;
     private Timer mTimer;
 
     @Override
@@ -32,8 +34,8 @@ public class MainActivity extends AppCompatActivity implements AdvancedWebView.L
         mWebView = (AdvancedWebView) findViewById(R.id.webView);
         mWebView.setListener(this, this);
         mWebView.loadUrl("http://www.naver.com");
-        mWebView.setWebChromeClient(new WebChromeClient()); //웹뷰에 크롬 사용 허용 //이 부분이 없으면 크롬에서 alert가 뜨지 않음
-        reloadWebView();
+//        mWebView.setWebChromeClient(new WebChromeClient()); //웹뷰에 크롬 사용 허용 //이 부분이 없으면 크롬에서 alert가 뜨지 않음
+//        reloadWebView();
 //        Timer timer = new Timer();
 //        TimerTask tt = new TimerTask() {
 //            @Override
@@ -47,17 +49,16 @@ public class MainActivity extends AppCompatActivity implements AdvancedWebView.L
 
     }
 
-    public void reloadWebView() {
-        final Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                Log.d("reload", "a");
-                mWebView.loadUrl("http://www.naver.com");
-                reloadWebView();
-            }
-        }, 10000);}
-
+//    public void reloadWebView() {
+//        final Handler handler = new Handler();
+//        handler.postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                Log.d("reload", "a");
+//                mWebView.loadUrl("http://www.naver.com");
+//                reloadWebView();
+//            }
+//        }, 10000);}
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) { //뒤로가기 버튼 이벤트
@@ -86,7 +87,7 @@ public class MainActivity extends AppCompatActivity implements AdvancedWebView.L
     protected void onDestroy() {
         super.onDestroy();
         mWebView.onDestroy();
-        mTimer.cancel();
+        //mTimer.cancel();
     }
 
     @Override

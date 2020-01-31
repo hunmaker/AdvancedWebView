@@ -9,10 +9,12 @@
 
     <TextView
         android:id="@+id/textView"
+        android:layout_gravity="center"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="AdvancedWebView Test"
-        android:textSize="20dp" />
+        android:textSize="20dp"
+        android:textStyle="bold" />
 
     <im.delight.android.webview.AdvancedWebView
         android:id="@+id/webView"
