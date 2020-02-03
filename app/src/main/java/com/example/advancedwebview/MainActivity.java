@@ -39,27 +39,41 @@ public class MainActivity extends AppCompatActivity implements AdvancedWebView.L
     Button button;
     TextView textView;
     Context context;
+    TextView mTextView;
+    EditText mEditText;
+    Button mButton;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main2);
+        setContentView(R.layout.activity_main3);
         mWebView = findViewById(R.id.webView3);
         editText = findViewById(R.id.edit_num);
         button = findViewById(R.id.send_button);
         textView = findViewById(R.id.web_text);
         context = this;
+        mTextView = (TextView) findViewById(R.id.textview);
+        mButton = (Button) findViewById(R.id.button);
+        mEditText = (EditText) findViewById(R.id.edittext);
 
         mWebView.getSettings().setJavaScriptEnabled(true);
-        mWebView.addJavascriptInterface(new WebBridge(),"java");
-        mWebView.loadUrl("file:///android_asset/www/exam.html");
 
-        button.setOnClickListener(new View.OnClickListener() {
+        mWebView.addJavascriptInterface(new AndroidBridge(),"android");
+        mWebView.loadUrl("file:///android_asset/www/exam2.html");
+
+        mButton.setOnClickListener( new View.OnClickListener(){
             @Override
             public void onClick(View view) {
-                mWebView.loadUrl("javascript:exam_script.plus_num("+editText.getText()+")");
+                mWebView.loadUrl("javascript:setMessage('" + mEditText.getText() + "')");
             }
         });
+
+//        button.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                mWebView.loadUrl("javascript:exam_script.plus_num("+editText.getText()+")");
+//            }
+//        });
 
 //        mWebView = (AdvancedWebView) findViewById(R.id.webView);
 //        //mWebView.setListener(this, this);
@@ -75,8 +89,21 @@ public class MainActivity extends AppCompatActivity implements AdvancedWebView.L
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    Toast.makeText(context,"계산 결과는 "+num+"입니다.",Toast.LENGTH_LONG).show();
+                    Toast.makeText(context,"계산 결과는 "+ num +"입니다.",Toast.LENGTH_LONG).show();
                     textView.setText("Java :::: "+num);
+                }
+            });
+        }
+    }
+
+    class AndroidBridge {
+        @JavascriptInterface
+        public void setMessage(final String arg) {
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(context, "받은 메시지는 " + arg + "입니다.", Toast.LENGTH_LONG).show();
+                    mTextView.setText("받은 메시지 : \n" + arg);
                 }
             });
         }
